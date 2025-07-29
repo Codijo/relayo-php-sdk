@@ -3,6 +3,7 @@ name: CI
 on:
   push:
     branches: [ main, develop ]
+    tags: [ 'v*' ]
   pull_request:
     branches: [ main ]
 
@@ -89,4 +90,69 @@ jobs:
       run: composer install --prefer-dist --no-progress
 
     - name: Run security audit
-      run: composer audit 
+      run: composer audit
+
+  release:
+    needs: [test, static-analysis, security]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: 8.3
+
+    - name: Cache Composer packages
+      uses: actions/cache@v3
+      with:
+        path: vendor
+        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress
+
+    - name: Run tests
+      run: composer test
+
+    - name: Run static analysis
+      run: composer phpstan
+
+    - name: Run code style check
+      run: composer cs-check
+
+    - name: Create Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        body: |
+          ## What's Changed
+          
+          This release includes:
+          - Bug fixes and improvements
+          - Updated dependencies
+          - Enhanced documentation
+          
+          ## Installation
+          
+          ```bash
+          composer require codijo/relayo-php-sdk
+          ```
+          
+          ## Documentation
+          
+          See [README.md](https://github.com/Codijo/relayo-php-sdk/blob/main/README.md) for usage examples.
+        draft: false
+        prerelease: false
+
+    - name: Notify Packagist
+      run: |
+        curl -X POST https://packagist.org/api/update-package?username=${{ secrets.PACKAGIST_USERNAME }}&apiToken=${{ secrets.PACKAGIST_TOKEN }} \
+          -d '{"repository":{"url":"https://github.com/Codijo/relayo-php-sdk"}}' 

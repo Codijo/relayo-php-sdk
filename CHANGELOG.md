@@ -3,64 +3,48 @@
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
-e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
+e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Unreleased]
 
 ### Added
-- Estrutura inicial do SDK
-- Cliente HTTP PSR-18 com retry automático
-- Sistema de autenticação via token
-- Recurso WhatsApp com operações CRUD
-- Tratamento de erros específicos
-- Sistema de logging configurável
+- Estrutura inicial do SDK PHP para API Relayo
+- Autenticação via token Bearer
+- Gerenciamento de instâncias WhatsApp
+- Sistema de retry com backoff exponencial
+- Tratamento de erros personalizado
 - Testes automatizados com PHPUnit
 - Análise estática com PHPStan
-- Code style com PHP CodeSniffer
+- Verificação de estilo com PHP CodeSniffer
 - CI/CD com GitHub Actions
-- Documentação completa
-- Exemplos de uso
+- Documentação completa com exemplos
+- Script de release automatizado
 
 ### Changed
-- N/A
+- Nenhuma mudança ainda
 
 ### Deprecated
-- N/A
+- Nenhuma depreciação ainda
 
 ### Removed
-- N/A
+- Nenhuma remoção ainda
 
 ### Fixed
-- N/A
+- Nenhuma correção ainda
 
 ### Security
-- N/A
+- Nenhuma vulnerabilidade de segurança ainda
 
-## [1.0.0] - 2024-01-XX
+## [1.0.0] - 2024-12-19
 
 ### Added
-- Primeira versão estável do SDK
+- Versão inicial do SDK
 - Suporte completo à API Relayo
-- Autenticação OAuth2
-- Gerenciamento de instâncias WhatsApp
-- Retry automático com backoff exponencial
+- Autenticação e gerenciamento de tokens
+- Operações CRUD para instâncias WhatsApp
+- Sistema de configuração flexível
+- Logs detalhados para debug
 - Tratamento robusto de erros
-- Documentação completa em português
-- Exemplos práticos de uso
-- Testes com cobertura de código
-- Análise estática e qualidade de código
-- CI/CD automatizado
-
----
-
-## Convenções de Versionamento
-
-- **MAJOR**: Mudanças incompatíveis na API
-- **MINOR**: Novas funcionalidades compatíveis
-- **PATCH**: Correções de bugs compatíveis
-
-## Links
-
-- [Documentação da API](API_DOCUMENTATION.md)
-- [README](README.md)
-- [GitHub Repository](https://github.com/Codijo/relayo-php-sdk) 
+- Documentação completa
+- Exemplos de uso
+- Testes de integração 
