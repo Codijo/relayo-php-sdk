@@ -1,0 +1,153 @@
+name: Release
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: 8.3
+
+    - name: Cache Composer packages
+      uses: actions/cache@v3
+      with:
+        path: vendor
+        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress
+
+    - name: Run tests
+      run: composer test
+
+    - name: Run static analysis
+      run: composer phpstan
+
+    - name: Run code style check
+      run: composer cs-check
+
+    - name: Setup Git
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+
+    - name: Check for conventional commits
+      id: conventional
+      run: |
+        # Verificar se há commits convencionais desde o último release
+        LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+        
+        if [ -z "$LATEST_TAG" ]; then
+          # Primeiro release
+          COMMITS=$(git log --oneline)
+        else
+          # Commits desde o último release
+          COMMITS=$(git log --oneline $LATEST_TAG..HEAD)
+        fi
+        
+        # Verificar se há commits convencionais
+        CONVENTIONAL_COMMITS=$(echo "$COMMITS" | grep -E "^(feat|fix|docs|style|refactor|perf|test|chore|ci|build)(\(.+\))?:" || true)
+        
+        if [ -n "$CONVENTIONAL_COMMITS" ]; then
+          echo "has-conventional=true" >> $GITHUB_OUTPUT
+          echo "commits=$CONVENTIONAL_COMMITS" >> $GITHUB_OUTPUT
+        else
+          echo "has-conventional=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Auto version and release
+      if: steps.conventional.outputs.has-conventional == 'true'
+      run: |
+        # Obter versão atual
+        CURRENT_VERSION=$(composer show -s | grep "version" | awk '{print $2}')
+        echo "Current version: $CURRENT_VERSION"
+        
+        # Determinar tipo de release baseado nos commits
+        COMMITS='${{ steps.conventional.outputs.commits }}'
+        
+        # Verificar se há commits de breaking changes
+        if echo "$COMMITS" | grep -q "BREAKING CHANGE"; then
+          RELEASE_TYPE="major"
+        elif echo "$COMMITS" | grep -q "feat:"; then
+          RELEASE_TYPE="minor"
+        else
+          RELEASE_TYPE="patch"
+        fi
+        
+        echo "Release type: $RELEASE_TYPE"
+        
+        # Calcular nova versão
+        if [ "$RELEASE_TYPE" = "major" ]; then
+          NEW_VERSION=$(echo $CURRENT_VERSION | awk -F. '{print $1+1 ".0.0"}')
+        elif [ "$RELEASE_TYPE" = "minor" ]; then
+          NEW_VERSION=$(echo $CURRENT_VERSION | awk -F. '{print $1 "." $2+1 ".0"}')
+        else
+          NEW_VERSION=$(echo $CURRENT_VERSION | awk -F. '{print $1 "." $2 "." $3+1}')
+        fi
+        
+        echo "New version: $NEW_VERSION"
+        echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+        
+        # Atualizar composer.json
+        sed -i "s/\"version\": \"$CURRENT_VERSION\"/\"version\": \"$NEW_VERSION\"/" composer.json
+        
+        # Atualizar CHANGELOG.md
+        TODAY=$(date +%Y-%m-%d)
+        sed -i "s/## \[Unreleased\]/## \[Unreleased\]\n\n## \[$NEW_VERSION\] - $TODAY/" CHANGELOG.md
+        
+        # Commit das mudanças
+        git add composer.json CHANGELOG.md
+        git commit -m "chore: bump version to $NEW_VERSION [skip ci]"
+        
+        # Criar tag
+        git tag -a "v$NEW_VERSION" -m "Release v$NEW_VERSION"
+        
+        # Push das mudanças e tag
+        git push origin main
+        git push origin "v$NEW_VERSION"
+
+    - name: Create Release
+      if: steps.conventional.outputs.has-conventional == 'true'
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ env.NEW_VERSION }}
+        release_name: Release v${{ env.NEW_VERSION }}
+        body: |
+          ## What's Changed
+          
+          This release includes:
+          - Bug fixes and improvements
+          - Updated dependencies
+          - Enhanced documentation
+          
+          ## Installation
+          
+          ```bash
+          composer require codijo/relayo-php-sdk
+          ```
+          
+          ## Documentation
+          
+          See [README.md](https://github.com/Codijo/relayo-php-sdk/blob/main/README.md) for usage examples.
+        draft: false
+        prerelease: false
+
+    - name: Notify Packagist
+      if: steps.conventional.outputs.has-conventional == 'true'
+      run: |
+        curl -X POST https://packagist.org/api/update-package?username=${{ secrets.PACKAGIST_USERNAME }}&apiToken=${{ secrets.PACKAGIST_TOKEN }} \
+          -d '{"repository":{"url":"https://github.com/Codijo/relayo-php-sdk"}}' 

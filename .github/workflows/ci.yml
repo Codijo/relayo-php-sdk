@@ -92,7 +92,9 @@ jobs:
     - name: Run security audit
       run: composer audit
 
-  release:
+
+
+  manual-release:
     needs: [test, static-analysis, security]
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
