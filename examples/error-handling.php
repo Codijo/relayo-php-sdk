@@ -15,8 +15,9 @@ echo "=== Relayo PHP SDK - Tratamento de Erros ===\n\n";
 // Exemplo 1: Erro de autenticação
 echo "1. Testando erro de autenticação...\n";
 try {
-    $auth = $relayo->auth()->login('email_invalido@test.com', 'senha_errada');
-    echo "❌ Login não deveria ter funcionado!\n";
+    // Tentar operação sem token
+    $instances = $relayo->whatsapp()->list();
+    echo "❌ Operação não deveria ter funcionado sem token!\n";
     
 } catch (AuthenticationException $e) {
     echo "✅ Erro de autenticação capturado corretamente:\n";
@@ -79,12 +80,13 @@ function executeApiOperation($relayo, $operation) {
 }
 
 // Testar diferentes operações
-echo "   Testando login com credenciais inválidas...\n";
+echo "   Testando operação sem token...\n";
 $result = executeApiOperation($relayo, function() use ($relayo) {
-    return $relayo->auth()->login('invalid@test.com', 'wrong');
+    return $relayo->whatsapp()->list();
 });
 
-echo "   Testando operação sem autenticação...\n";
+echo "   Testando operação com token inválido...\n";
+$relayo->setToken('token_invalido');
 $result = executeApiOperation($relayo, function() use ($relayo) {
     return $relayo->whatsapp()->list();
 });

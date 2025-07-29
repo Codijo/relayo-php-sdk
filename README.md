@@ -55,26 +55,27 @@ use Relayo\SDK\RelayoSDK;
 
 $relayo = RelayoSDK::create('https://api.relayo.com.br');
 
-// Login
-try {
-    $auth = $relayo->auth()->login('seu@email.com', 'sua_senha');
-    $token = $auth['success']['token'];
-    
-    echo "Login realizado com sucesso!\n";
-    echo "Token: " . $token . "\n";
-    
-} catch (\Relayo\SDK\Exceptions\AuthenticationException $e) {
-    echo "Erro de autenticação: " . $e->getMessage() . "\n";
-}
+// Configurar token de autenticação Bearer
+$relayo->setToken('seu_token_bearer_aqui');
 
 // Verificar se está autenticado
 if ($relayo->isAuthenticated()) {
-    echo "Usuário autenticado!\n";
+    echo "Token configurado com sucesso!\n";
 }
 
-// Logout
-$relayo->auth()->logout();
+// Ou usar o AuthManager diretamente
+$relayo->auth()->setToken('seu_token_bearer_aqui');
+
+// Validar token
+if ($relayo->auth()->validateToken()) {
+    echo "Token válido!\n";
+}
+
+// Remover token
+$relayo->auth()->clearToken();
 ```
+
+**Importante:** O token deve ser obtido através do seu sistema de autenticação (Laravel Passport) e fornecido ao SDK.
 
 ### Gerenciamento de Instâncias WhatsApp
 

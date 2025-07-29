@@ -8,7 +8,7 @@ use Psr\Log\LoggerInterface;
 use Relayo\SDK\Http\HttpClient;
 
 /**
- * Gerenciador de autenticação
+ * Gerenciador de autenticação via token Bearer
  */
 class AuthManager
 {
@@ -19,54 +19,21 @@ class AuthManager
     }
 
     /**
-     * Faz login na API
-     *
-     * @return array<string, mixed>
+     * Define o token de autenticação Bearer
      */
-    public function login(string $email, string $password): array
+    public function setToken(string $token): void
     {
-        $this->logger->info('Tentando fazer login', ['email' => $email]);
-
-        $response = $this->httpClient->post('panel/customer/login', [
-            'email' => $email,
-            'password' => $password
-        ]);
-
-        $data = json_decode((string) $response->getBody(), true);
-
-        if (isset($data['success']['token'])) {
-            $token = $data['success']['token'];
-            $this->httpClient->setToken($token);
-
-            $this->logger->info('Login realizado com sucesso', ['email' => $email]);
-
-            return $data;
-        }
-
-        throw new \RuntimeException('Token não encontrado na resposta');
+        $this->httpClient->setToken($token);
+        $this->logger->info('Token de autenticação definido');
     }
 
     /**
-     * Faz logout da API
+     * Remove o token de autenticação
      */
-    public function logout(): void
+    public function clearToken(): void
     {
-        if (!$this->httpClient->getToken()) {
-            $this->logger->warning('Tentativa de logout sem token');
-            return;
-        }
-
-        $this->logger->info('Fazendo logout');
-
-        try {
-            $this->httpClient->post('panel/customer/logout');
-            $this->httpClient->setToken('');
-
-            $this->logger->info('Logout realizado com sucesso');
-        } catch (\Exception $e) {
-            $this->logger->error('Erro ao fazer logout', ['error' => $e->getMessage()]);
-            throw $e;
-        }
+        $this->httpClient->setToken('');
+        $this->logger->info('Token de autenticação removido');
     }
 
     /**
@@ -83,5 +50,14 @@ class AuthManager
     public function getToken(): ?string
     {
         return $this->httpClient->getToken();
+    }
+
+    /**
+     * Valida se o token está presente e não está vazio
+     */
+    public function validateToken(): bool
+    {
+        $token = $this->getToken();
+        return $token !== null && trim($token) !== '';
     }
 }

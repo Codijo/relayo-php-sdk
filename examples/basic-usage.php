@@ -16,25 +16,17 @@ $relayo = RelayoSDK::create('https://api.relayo.com.br', [
 echo "=== Relayo PHP SDK - Exemplo Básico ===\n\n";
 
 // 1. Autenticação
-echo "1. Fazendo login...\n";
-try {
-    $auth = $relayo->auth()->login('seu@email.com', 'sua_senha');
-    $token = $auth['success']['token'];
-    
-    echo "✅ Login realizado com sucesso!\n";
-    echo "   Token: " . substr($token, 0, 20) . "...\n\n";
-    
-} catch (AuthenticationException $e) {
-    echo "❌ Erro de autenticação: " . $e->getMessage() . "\n";
-    exit(1);
-}
+echo "1. Configurando autenticação...\n";
+$relayo->setToken('seu_token_bearer_aqui');
+
+echo "✅ Token configurado com sucesso!\n\n";
 
 // 2. Verificar autenticação
 echo "2. Verificando autenticação...\n";
 if ($relayo->isAuthenticated()) {
-    echo "✅ Usuário autenticado!\n\n";
+    echo "✅ Token válido!\n\n";
 } else {
-    echo "❌ Usuário não autenticado!\n\n";
+    echo "❌ Token inválido ou não configurado!\n\n";
     exit(1);
 }
 
@@ -118,13 +110,9 @@ try {
     echo "❌ Erro na busca: " . $e->getMessage() . "\n\n";
 }
 
-// 9. Logout
-echo "9. Fazendo logout...\n";
-try {
-    $relayo->auth()->logout();
-    echo "✅ Logout realizado com sucesso!\n\n";
-} catch (ApiException $e) {
-    echo "❌ Erro no logout: " . $e->getMessage() . "\n\n";
-}
+// 9. Limpar token
+echo "9. Removendo token...\n";
+$relayo->auth()->clearToken();
+echo "✅ Token removido com sucesso!\n\n";
 
 echo "=== Exemplo concluído! ===\n"; 
