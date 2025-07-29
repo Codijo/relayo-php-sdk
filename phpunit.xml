@@ -5,18 +5,14 @@
          colors="true"
          cacheDirectory=".phpunit.cache"
          processIsolation="false"
-         stopOnFailure="false">
+         stopOnFailure="false"
+         failOnWarning="false">
     <testsuites>
         <testsuite name="Relayo SDK Test Suite">
             <directory>tests</directory>
         </testsuite>
     </testsuites>
-    <coverage>
-        <report>
-            <html outputDirectory="coverage"/>
-            <xml outputDirectory="coverage"/>
-        </report>
-    </coverage>
+
     <php>
         <env name="APP_ENV" value="testing"/>
     </php>
