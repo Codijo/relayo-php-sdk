@@ -135,35 +135,6 @@ $relayo->application()->activate('app-id');
 $relayo->application()->deactivate('app-id');
 ```
 
-#### Servidores
-
-```php
-<?php
-
-// Listar servidores
-$servers = $relayo->server()->list();
-
-// Criar servidor
-$newServer = $relayo->server()->create([
-    'name' => 'Servidor Principal',
-    'ip_address' => '192.168.1.100',
-    'description' => 'Servidor de produção'
-]);
-
-// Obter servidor específico
-$server = $relayo->server()->get('server-id');
-
-// Estatísticas do servidor
-$stats = $relayo->server()->getStats('server-id');
-
-// Controle do servidor
-$relayo->server()->activate('server-id');
-$relayo->server()->deactivate('server-id');
-$relayo->server()->restart('server-id');
-
-// Logs do servidor
-$logs = $relayo->server()->getLogs('server-id');
-```
 
 #### Criar Instância
 
@@ -347,7 +318,6 @@ tests/
 └── Resources/
     ├── WhatsAppResourceTest.php # Testes do recurso WhatsApp
     ├── ApplicationResourceTest.php # Testes do recurso Aplicações
-    └── ServerResourceTest.php   # Testes do recurso Servidores
 ```
 
 ## 📁 Estrutura do Projeto
@@ -363,7 +333,6 @@ src/
 ├── Resources/
 │   ├── WhatsAppResource.php    # Recurso WhatsApp
 │   ├── ApplicationResource.php # Recurso Aplicações
-│   └── ServerResource.php      # Recurso Servidores
 └── Exceptions/
     ├── ApiException.php        # Exceção base
     ├── AuthenticationException.php

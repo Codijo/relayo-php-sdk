@@ -11,9 +11,8 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Relayo\SDK\Auth\AuthManager;
 use Relayo\SDK\Http\HttpClient;
-use Relayo\SDK\Resources\WhatsAppResource;
 use Relayo\SDK\Resources\ApplicationResource;
-use Relayo\SDK\Resources\ServerResource;
+use Relayo\SDK\Resources\WhatsAppResource;
 
 /**
  * Cliente principal do SDK Relayo
@@ -87,14 +86,6 @@ class RelayoSDK
     public function application(): ApplicationResource
     {
         return new ApplicationResource($this->httpClient);
-    }
-
-    /**
-     * Retorna o recurso de servidores
-     */
-    public function server(): ServerResource
-    {
-        return new ServerResource($this->httpClient);
     }
 
     /**
