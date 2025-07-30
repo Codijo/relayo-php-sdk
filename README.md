@@ -77,9 +77,9 @@ $relayo->auth()->clearToken();
 
 **Importante:** O token deve ser obtido através do seu sistema de autenticação (Laravel Passport) e fornecido ao SDK.
 
-### Gerenciamento de Instâncias WhatsApp
+### Gerenciamento de Recursos
 
-#### Listar Instâncias
+#### Instâncias WhatsApp
 
 ```php
 <?php
@@ -103,6 +103,66 @@ $instances = $relayo->whatsapp()->list([
 
 // Com paginação
 $instances = $relayo->whatsapp()->listPaginated(1, 10);
+```
+
+#### Aplicações
+
+```php
+<?php
+
+// Listar aplicações
+$applications = $relayo->application()->list();
+
+// Criar aplicação
+$newApp = $relayo->application()->create([
+    'name' => 'Minha Aplicação',
+    'description' => 'Descrição da aplicação'
+]);
+
+// Obter aplicação específica
+$app = $relayo->application()->get('app-id');
+
+// Atualizar aplicação
+$updatedApp = $relayo->application()->update('app-id', [
+    'name' => 'Nome Atualizado'
+]);
+
+// Estatísticas da aplicação
+$stats = $relayo->application()->getStats('app-id');
+
+// Ativar/Desativar aplicação
+$relayo->application()->activate('app-id');
+$relayo->application()->deactivate('app-id');
+```
+
+#### Servidores
+
+```php
+<?php
+
+// Listar servidores
+$servers = $relayo->server()->list();
+
+// Criar servidor
+$newServer = $relayo->server()->create([
+    'name' => 'Servidor Principal',
+    'ip_address' => '192.168.1.100',
+    'description' => 'Servidor de produção'
+]);
+
+// Obter servidor específico
+$server = $relayo->server()->get('server-id');
+
+// Estatísticas do servidor
+$stats = $relayo->server()->getStats('server-id');
+
+// Controle do servidor
+$relayo->server()->activate('server-id');
+$relayo->server()->deactivate('server-id');
+$relayo->server()->restart('server-id');
+
+// Logs do servidor
+$logs = $relayo->server()->getLogs('server-id');
 ```
 
 #### Criar Instância
@@ -285,7 +345,9 @@ tests/
 ├── Auth/
 │   └── AuthManagerTest.php     # Testes de autenticação
 └── Resources/
-    └── WhatsAppResourceTest.php # Testes do recurso WhatsApp
+    ├── WhatsAppResourceTest.php # Testes do recurso WhatsApp
+    ├── ApplicationResourceTest.php # Testes do recurso Aplicações
+    └── ServerResourceTest.php   # Testes do recurso Servidores
 ```
 
 ## 📁 Estrutura do Projeto
@@ -299,7 +361,9 @@ src/
 ├── Http/
 │   └── HttpClient.php          # Cliente HTTP PSR-18
 ├── Resources/
-│   └── WhatsAppResource.php    # Recurso WhatsApp
+│   ├── WhatsAppResource.php    # Recurso WhatsApp
+│   ├── ApplicationResource.php # Recurso Aplicações
+│   └── ServerResource.php      # Recurso Servidores
 └── Exceptions/
     ├── ApiException.php        # Exceção base
     ├── AuthenticationException.php
