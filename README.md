@@ -397,6 +397,30 @@ Este projeto está licenciado sob a licença MIT. Veja o arquivo [LICENSE](LICEN
 4. Push para a branch (`git push origin feature/AmazingFeature`)
 5. Abra um Pull Request
 
+## 🧪 Testes de Integração
+
+Para testar o SDK com a API oficial, use os scripts de exemplo:
+
+### Teste Rápido
+```bash
+php examples/quick-test.php SEU_TOKEN_AQUI
+```
+
+### Teste Completo
+```bash
+php examples/integration-test.php SEU_TOKEN_AQUI
+```
+
+### Teste com Criação de Recursos
+```bash
+TEST_CREATION=true php examples/integration-test.php SEU_TOKEN_AQUI
+```
+
+### Usando Variável de Ambiente
+```bash
+RELAYO_TOKEN=seu_token php examples/integration-test.php
+```
+
 ## 📞 Suporte
 
 - **Email**: dev@codijo.com.br
