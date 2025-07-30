@@ -148,7 +148,12 @@ class HttpClient
     private function addHeaders(RequestInterface $request): RequestInterface
     {
         $headers = [
-            'Accept' => 'application/json',
+            'Accept' => 'application/json, text/plain, */*',
+            'Accept-Language' => 'en-US,en;q=0.9,pt;q=0.8,es;q=0.7,fr;q=0.6',
+            'Cache-Control' => 'no-cache',
+            'Connection' => 'keep-alive',
+            'Pragma' => 'no-cache',
+            'X-Requested-With' => 'XMLHttpRequest',
             'User-Agent' => 'Codijo-Relayo-PHP-SDK/1.0'
         ];
 

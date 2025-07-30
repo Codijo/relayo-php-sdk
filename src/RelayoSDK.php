@@ -11,7 +11,9 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Relayo\SDK\Auth\AuthManager;
 use Relayo\SDK\Http\HttpClient;
-use Relayo\SDK\Resources\ApplicationResource;
+use Relayo\SDK\Resources\CallbackConfigurationWhatsAppResource;
+use Relayo\SDK\Resources\DeliveryWhatsAppResource;
+use Relayo\SDK\Resources\IntegrationResource;
 use Relayo\SDK\Resources\WhatsAppResource;
 
 /**
@@ -81,11 +83,35 @@ class RelayoSDK
     }
 
     /**
-     * Retorna o recurso de aplicações
+     * Retorna o recurso de integrações
      */
-    public function application(): ApplicationResource
+    public function integration(): IntegrationResource
     {
-        return new ApplicationResource($this->httpClient);
+        return new IntegrationResource($this->httpClient);
+    }
+
+    /**
+     * Retorna o recurso de delivery WhatsApp
+     */
+    public function deliveryWhatsApp(): DeliveryWhatsAppResource
+    {
+        return new DeliveryWhatsAppResource($this->httpClient);
+    }
+
+    /**
+     * Retorna o recurso de configuração de callbacks WhatsApp
+     */
+    public function callbackConfigurationWhatsApp(): CallbackConfigurationWhatsAppResource
+    {
+        return new CallbackConfigurationWhatsAppResource($this->httpClient);
+    }
+
+    /**
+     * Retorna o cliente HTTP para uso direto
+     */
+    public function getHttpClient(): HttpClient
+    {
+        return $this->httpClient;
     }
 
     /**

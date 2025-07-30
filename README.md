@@ -105,35 +105,110 @@ $instances = $relayo->whatsapp()->list([
 $instances = $relayo->whatsapp()->listPaginated(1, 10);
 ```
 
-#### Aplicações
+
+
+#### Integrações
 
 ```php
 <?php
 
-// Listar aplicações
-$applications = $relayo->application()->list();
+// Listar integrações
+$integrations = $relayo->integration()->list();
 
-// Criar aplicação
-$newApp = $relayo->application()->create([
-    'name' => 'Minha Aplicação',
-    'description' => 'Descrição da aplicação'
+// Criar integração
+$newIntegration = $relayo->integration()->create([
+    'name' => 'Minha Integração',
+    'type' => 'webhook',
+    'url' => 'https://example.com/webhook'
 ]);
 
-// Obter aplicação específica
-$app = $relayo->application()->get('app-id');
+// Obter integração específica
+$integration = $relayo->integration()->get('integration-id');
 
-// Atualizar aplicação
-$updatedApp = $relayo->application()->update('app-id', [
-    'name' => 'Nome Atualizado'
+// Atualizar integração
+$updatedIntegration = $relayo->integration()->update('integration-id', [
+    'name' => 'Integração Atualizada'
 ]);
 
-// Estatísticas da aplicação
-$stats = $relayo->application()->getStats('app-id');
-
-// Ativar/Desativar aplicação
-$relayo->application()->activate('app-id');
-$relayo->application()->deactivate('app-id');
+// Excluir integração
+$relayo->integration()->delete('integration-id');
 ```
+
+#### Delivery WhatsApp
+
+```php
+<?php
+
+// Listar histórico de delivery
+$history = $relayo->deliveryWhatsApp()->getHistory();
+
+// Obter item específico do histórico
+$historyItem = $relayo->deliveryWhatsApp()->getHistoryItem('history-id');
+
+// Enviar mensagem de texto via WhatsApp
+$messageResult = $relayo->deliveryWhatsApp()->sendTextMessage(
+    'inst_uHnTuxOWxzlop4ETJV5AMzCOIwhXiqlmkmcgP77i',
+    '555199693860',
+    'Aqui, iPORTO DEV!!!! |o|'
+);
+
+// Enviar mensagem com dados customizados
+$messageResult = $relayo->deliveryWhatsApp()->sendTextMessageWithData([
+    'instance_id' => 'inst_uHnTuxOWxzlop4ETJV5AMzCOIwhXiqlmkmcgP77i',
+    'to' => '555199693860',
+    'message' => 'Mensagem customizada'
+]);
+
+#### Configuração de Callbacks WhatsApp
+
+```php
+<?php
+
+// Obter configuração de callback
+$callback = $relayo->callbackConfigurationWhatsApp()->get();
+
+// Obter configuração específica por ID
+$callbackById = $relayo->callbackConfigurationWhatsApp()->getById('callback-id');
+
+// Atualizar configuração
+$updatedCallback = $relayo->callbackConfigurationWhatsApp()->update('callback-id', [
+    'name' => 'Callback Atualizado'
+]);
+
+// Obter configuração específica
+$callback = $relayo->callbackConfigurationWhatsApp()->get('callback-id');
+
+// Atualizar configuração
+$updatedCallback = $relayo->callbackConfigurationWhatsApp()->update('callback-id', [
+    'name' => 'Callback Atualizado'
+]);
+
+// Excluir configuração
+$relayo->callbackConfigurationWhatsApp()->delete('callback-id');
+
+// Controle da configuração
+$relayo->callbackConfigurationWhatsApp()->activate('callback-id');
+$relayo->callbackConfigurationWhatsApp()->deactivate('callback-id');
+
+// Testar configuração
+$testResult = $relayo->callbackConfigurationWhatsApp()->test('callback-id');
+
+// Estatísticas de callback
+$stats = $relayo->callbackConfigurationWhatsApp()->getStats('callback-id');
+
+// Logs de callback
+$logs = $relayo->callbackConfigurationWhatsApp()->getLogs('callback-id');
+
+// Validar URL de callback
+$validation = $relayo->callbackConfigurationWhatsApp()->validateUrl('callback-id', [
+    'url' => 'https://example.com/webhook'
+]);
+
+// Obter URL do webhook
+$webhookInfo = $relayo->callbackConfigurationWhatsApp()->getWebhookUrl('callback-id');
+
+// Regenerar secret do webhook
+$newSecret = $relayo->callbackConfigurationWhatsApp()->regenerateSecret('callback-id');
 
 
 #### Criar Instância
@@ -318,6 +393,9 @@ tests/
 └── Resources/
     ├── WhatsAppResourceTest.php # Testes do recurso WhatsApp
     ├── ApplicationResourceTest.php # Testes do recurso Aplicações
+    ├── IntegrationResourceTest.php # Testes do recurso Integrações
+    ├── DeliveryWhatsAppResourceTest.php # Testes do recurso Delivery WhatsApp
+    └── CallbackConfigurationWhatsAppResourceTest.php # Testes do recurso Callbacks WhatsApp
 ```
 
 ## 📁 Estrutura do Projeto
@@ -331,8 +409,10 @@ src/
 ├── Http/
 │   └── HttpClient.php          # Cliente HTTP PSR-18
 ├── Resources/
-│   ├── WhatsAppResource.php    # Recurso WhatsApp
-│   ├── ApplicationResource.php # Recurso Aplicações
+│   ├── WhatsAppResource.php                    # Recurso WhatsApp
+│   ├── IntegrationResource.php                 # Recurso Integrações
+│   ├── DeliveryWhatsAppResource.php            # Recurso Delivery WhatsApp
+│   └── CallbackConfigurationWhatsAppResource.php # Recurso Callbacks WhatsApp
 └── Exceptions/
     ├── ApiException.php        # Exceção base
     ├── AuthenticationException.php
@@ -356,10 +436,15 @@ src/
 
 O SDK adiciona automaticamente os seguintes headers:
 
-- `Accept: application/json`
+- `Accept: application/json, text/plain, */*`
+- `Accept-Language: en-US,en;q=0.9,pt;q=0.8,es;q=0.7,fr;q=0.6`
+- `Cache-Control: no-cache`
+- `Connection: keep-alive`
+- `Pragma: no-cache`
+- `X-Requested-With: XMLHttpRequest`
 - `Content-Type: application/json` (para POST/PUT)
 - `Authorization: Bearer {token}` (quando autenticado)
-- `User-Agent: Relayo-PHP-SDK/1.0`
+- `User-Agent: Codijo-Relayo-PHP-SDK/1.0`
 
 ## 🚀 Funcionalidades
 
@@ -409,6 +494,11 @@ php examples/quick-test.php SEU_TOKEN_AQUI
 ### Teste Completo
 ```bash
 php examples/integration-test.php SEU_TOKEN_AQUI
+```
+
+### Teste de Envio de Mensagens
+```bash
+php examples/test-message-sending.php SEU_TOKEN_AQUI [INSTANCE_ID]
 ```
 
 ### Teste com Criação de Recursos
