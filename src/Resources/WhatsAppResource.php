@@ -24,10 +24,16 @@ class WhatsAppResource
      */
     public function list(array $filters = []): array
     {
-        $response = $this->httpClient->get('panel/application/server/instance/whatsapp', $filters);
+        $response = $this->httpClient->get('api/panel/application/server/instance/whatsapp', $filters);
         $data = json_decode((string) $response->getBody(), true);
 
-        return $data['data'] ?? [];
+        // Se a resposta tem estrutura de paginação, retorna apenas os dados
+        if (isset($data['data']) && is_array($data['data'])) {
+            return $data['data'];
+        }
+
+        // Se não tem estrutura de paginação, retorna a resposta completa
+        return $data ?? [];
     }
 
     /**
@@ -38,7 +44,7 @@ class WhatsAppResource
      */
     public function create(array $data): array
     {
-        $response = $this->httpClient->post('panel/application/server/instance/whatsapp', $data);
+        $response = $this->httpClient->post('api/panel/application/server/instance/whatsapp', $data);
         $responseData = json_decode((string) $response->getBody(), true);
 
         return $responseData['data'] ?? [];
@@ -51,7 +57,7 @@ class WhatsAppResource
      */
     public function get(string $id): array
     {
-        $response = $this->httpClient->get("panel/application/server/instance/whatsapp/{$id}");
+        $response = $this->httpClient->get("api/panel/application/server/instance/whatsapp/{$id}");
         $data = json_decode((string) $response->getBody(), true);
 
         return $data['data'] ?? [];
@@ -65,7 +71,7 @@ class WhatsAppResource
      */
     public function update(string $id, array $data): array
     {
-        $response = $this->httpClient->put("panel/application/server/instance/whatsapp/{$id}", $data);
+        $response = $this->httpClient->put("api/panel/application/server/instance/whatsapp/{$id}", $data);
         $responseData = json_decode((string) $response->getBody(), true);
 
         return $responseData['data'] ?? [];
@@ -76,7 +82,7 @@ class WhatsAppResource
      */
     public function delete(string $id): void
     {
-        $this->httpClient->delete("panel/application/server/instance/whatsapp/{$id}");
+        $this->httpClient->delete("api/panel/application/server/instance/whatsapp/{$id}");
     }
 
     /**

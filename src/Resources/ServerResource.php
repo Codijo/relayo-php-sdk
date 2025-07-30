@@ -24,10 +24,16 @@ class ServerResource
      */
     public function list(array $filters = []): array
     {
-        $response = $this->httpClient->get('panel/application/server', $filters);
+        $response = $this->httpClient->get('api/panel/application/server', $filters);
         $data = json_decode((string) $response->getBody(), true);
 
-        return $data['data'] ?? [];
+        // Se a resposta tem estrutura de paginação, retorna apenas os dados
+        if (isset($data['data']) && is_array($data['data'])) {
+            return $data['data'];
+        }
+
+        // Se não tem estrutura de paginação, retorna a resposta completa
+        return $data ?? [];
     }
 
     /**
@@ -38,7 +44,7 @@ class ServerResource
      */
     public function create(array $data): array
     {
-        $response = $this->httpClient->post('panel/application/server', $data);
+        $response = $this->httpClient->post('api/panel/application/server', $data);
         $responseData = json_decode((string) $response->getBody(), true);
 
         return $responseData['data'] ?? [];
@@ -51,7 +57,7 @@ class ServerResource
      */
     public function get(string $id): array
     {
-        $response = $this->httpClient->get("panel/application/server/{$id}");
+        $response = $this->httpClient->get("api/panel/application/server/{$id}");
         $data = json_decode((string) $response->getBody(), true);
 
         return $data['data'] ?? [];
@@ -65,7 +71,7 @@ class ServerResource
      */
     public function update(string $id, array $data): array
     {
-        $response = $this->httpClient->put("panel/application/server/{$id}", $data);
+        $response = $this->httpClient->put("api/panel/application/server/{$id}", $data);
         $responseData = json_decode((string) $response->getBody(), true);
 
         return $responseData['data'] ?? [];
@@ -76,7 +82,7 @@ class ServerResource
      */
     public function delete(string $id): void
     {
-        $this->httpClient->delete("panel/application/server/{$id}");
+        $this->httpClient->delete("api/panel/application/server/{$id}");
     }
 
     /**
@@ -112,7 +118,7 @@ class ServerResource
      */
     public function getStats(string $id): array
     {
-        $response = $this->httpClient->get("panel/application/server/{$id}/stats");
+        $response = $this->httpClient->get("api/panel/application/server/{$id}/stats");
         $data = json_decode((string) $response->getBody(), true);
 
         return $data['data'] ?? [];
@@ -125,7 +131,7 @@ class ServerResource
      */
     public function activate(string $id): array
     {
-        $response = $this->httpClient->post("panel/application/server/{$id}/activate");
+        $response = $this->httpClient->post("api/panel/application/server/{$id}/activate");
         $responseData = json_decode((string) $response->getBody(), true);
 
         return $responseData['data'] ?? [];
@@ -138,7 +144,7 @@ class ServerResource
      */
     public function deactivate(string $id): array
     {
-        $response = $this->httpClient->post("panel/application/server/{$id}/deactivate");
+        $response = $this->httpClient->post("api/panel/application/server/{$id}/deactivate");
         $responseData = json_decode((string) $response->getBody(), true);
 
         return $responseData['data'] ?? [];
@@ -151,7 +157,7 @@ class ServerResource
      */
     public function restart(string $id): array
     {
-        $response = $this->httpClient->post("panel/application/server/{$id}/restart");
+        $response = $this->httpClient->post("api/panel/application/server/{$id}/restart");
         $responseData = json_decode((string) $response->getBody(), true);
 
         return $responseData['data'] ?? [];
@@ -164,9 +170,15 @@ class ServerResource
      */
     public function getLogs(string $id, array $filters = []): array
     {
-        $response = $this->httpClient->get("panel/application/server/{$id}/logs", $filters);
+        $response = $this->httpClient->get("api/panel/application/server/{$id}/logs", $filters);
         $data = json_decode((string) $response->getBody(), true);
 
-        return $data['data'] ?? [];
+        // Se a resposta tem estrutura de paginação, retorna apenas os dados
+        if (isset($data['data']) && is_array($data['data'])) {
+            return $data['data'];
+        }
+
+        // Se não tem estrutura de paginação, retorna a resposta completa
+        return $data ?? [];
     }
 } 

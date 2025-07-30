@@ -24,10 +24,16 @@ class ApplicationResource
      */
     public function list(array $filters = []): array
     {
-        $response = $this->httpClient->get('panel/application', $filters);
+        $response = $this->httpClient->get('api/panel/application', $filters);
         $data = json_decode((string) $response->getBody(), true);
 
-        return $data['data'] ?? [];
+        // Se a resposta tem estrutura de paginação, retorna apenas os dados
+        if (isset($data['data']) && is_array($data['data'])) {
+            return $data['data'];
+        }
+
+        // Se não tem estrutura de paginação, retorna a resposta completa
+        return $data ?? [];
     }
 
     /**
@@ -38,7 +44,7 @@ class ApplicationResource
      */
     public function create(array $data): array
     {
-        $response = $this->httpClient->post('panel/application', $data);
+        $response = $this->httpClient->post('api/panel/application', $data);
         $responseData = json_decode((string) $response->getBody(), true);
 
         return $responseData['data'] ?? [];
@@ -51,7 +57,7 @@ class ApplicationResource
      */
     public function get(string $id): array
     {
-        $response = $this->httpClient->get("panel/application/{$id}");
+        $response = $this->httpClient->get("api/panel/application/{$id}");
         $data = json_decode((string) $response->getBody(), true);
 
         return $data['data'] ?? [];
@@ -65,7 +71,7 @@ class ApplicationResource
      */
     public function update(string $id, array $data): array
     {
-        $response = $this->httpClient->put("panel/application/{$id}", $data);
+        $response = $this->httpClient->put("api/panel/application/{$id}", $data);
         $responseData = json_decode((string) $response->getBody(), true);
 
         return $responseData['data'] ?? [];
@@ -76,7 +82,7 @@ class ApplicationResource
      */
     public function delete(string $id): void
     {
-        $this->httpClient->delete("panel/application/{$id}");
+        $this->httpClient->delete("api/panel/application/{$id}");
     }
 
     /**
@@ -112,7 +118,7 @@ class ApplicationResource
      */
     public function getStats(string $id): array
     {
-        $response = $this->httpClient->get("panel/application/{$id}/stats");
+        $response = $this->httpClient->get("api/panel/application/{$id}/stats");
         $data = json_decode((string) $response->getBody(), true);
 
         return $data['data'] ?? [];
@@ -125,7 +131,7 @@ class ApplicationResource
      */
     public function activate(string $id): array
     {
-        $response = $this->httpClient->post("panel/application/{$id}/activate");
+        $response = $this->httpClient->post("api/panel/application/{$id}/activate");
         $responseData = json_decode((string) $response->getBody(), true);
 
         return $responseData['data'] ?? [];
@@ -138,7 +144,7 @@ class ApplicationResource
      */
     public function deactivate(string $id): array
     {
-        $response = $this->httpClient->post("panel/application/{$id}/deactivate");
+        $response = $this->httpClient->post("api/panel/application/{$id}/deactivate");
         $responseData = json_decode((string) $response->getBody(), true);
 
         return $responseData['data'] ?? [];
